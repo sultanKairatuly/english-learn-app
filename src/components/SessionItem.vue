@@ -84,4 +84,25 @@ const props = defineProps({
     font-size: 15px;
   }
 }
+
+@media (max-width: 425px) {
+  .session-icon {
+    font-size: 24px;
+  }
+
+  .session_text {
+    padding: 0;
+  }
+
+  .session-text_title {
+    font-size: 17px;
+  }
+  .session-text_subtitle {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 375px) {
+
+}
 </style>

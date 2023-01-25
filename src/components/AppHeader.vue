@@ -7,6 +7,7 @@
         :key="item.id"
         :to="item.route"
         @click="handleRouting"
+        :active-class="'active-link'"
       >
         {{ item.title }}
       </router-link>
@@ -27,9 +28,9 @@
       <router-link
         class="menu_item"
         v-for="item in headerItems"
+        @click="handleRouting(item)"
         :key="item.id"
         :to="item.route"
-        @click="handleRouting"
       >
         {{ item.title }}
       </router-link>
@@ -41,7 +42,9 @@
 <script setup>
 import { v4 as uuidv4 } from "uuid";
 import { ref } from "vue";
+import { useStore } from "vuex";
 
+const store = useStore();
 const isBurgerMenu = ref(false);
 
 const headerItems = [
@@ -74,8 +77,12 @@ const headerItems = [
   },
 ];
 
-function handleRouting() {
+async function handleRouting(route) {
   isBurgerMenu.value = false;
+  store.dispatch("callPageLoaderUpdation", true);
+  setTimeout(() => {
+    store.dispatch("callPageLoaderUpdation", false);
+  }, 500);
 }
 
 function openMenu() {
@@ -90,12 +97,10 @@ function openMenu() {
   display: flex;
   align-items: center;
   position: fixed;
-  width: 100%;
-  border-bottom: 1px solid rgb(46, 45, 45);
-  margin-bottom: 102px;
-  z-index: 100;
+  z-index: 150;
   overflow: hidden;
   box-shadow: -1px 6px 6px 0px rgba(0, 0, 0, 0.2);
+  width: 100%;
 }
 
 .menu {
@@ -155,8 +160,9 @@ function openMenu() {
 }
 .header_item {
   color: #fff;
+  opacity: 0.6;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 400;
   cursor: pointer;
   text-decoration: none;
   font-size: 16px;
@@ -188,6 +194,11 @@ function openMenu() {
   visibility: visible;
 }
 
+.active-link {
+  opacity: 1;
+  font-weight: 500;
+}
+
 @media (max-width: 1550px) {
   .header {
     padding: 35px;
@@ -214,6 +225,57 @@ function openMenu() {
 @media (max-width: 800px) {
   .menu_item {
     font-size: 30px;
+  }
+
+  .header {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 425px) {
+  .menu_item {
+    font-size: 30px;
+  }
+
+  .burger {
+    width: 35px;
+    height: 35px;
+  }
+
+  .bar {
+    height: 2px;
+  }
+
+  .header {
+    padding: 15px 30px;
+  }
+
+  .close {
+    font-size: 32px;
+  }
+}
+@media (max-width: 375px) {
+  .menu_item {
+    font-size: 27px;
+  }
+
+  .close {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 320px) {
+  .menu_item {
+    font-size: 25px;
+  }
+
+  .burger {
+    width: 32px;
+    height: 32px;
+  }
+
+  .close {
+    font-size: 28px;
   }
 }
 </style>

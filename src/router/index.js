@@ -24,6 +24,7 @@ const routes = [
   },
   {
     path: "/quiz",
+    alias: "/games/quiz",
     name: "Quiz",
     component: () => import("../components/QuizGame.vue"),
   },
@@ -36,6 +37,11 @@ const routes = [
     path: "/insertion",
     name: "Insertion",
     component: () => import("../components/InsertionGame.vue"),
+  },
+  {
+    path: "/order",
+    name: "Order",
+    component: () => import("../components/OrderGame.vue"),
   },
   {
     path: "/level",

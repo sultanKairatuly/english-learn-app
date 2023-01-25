@@ -89,9 +89,17 @@ function changeHovered(game) {
 function selectGame(game) {
   store.dispatch("callGameUpdation", game);
   if (game.level) {
-    router.push("/level");
+    store.dispatch("callPageLoaderUpdation", true);
+    setTimeout(() => {
+      store.dispatch("callPageLoaderUpdation", false);
+      router.push("/level");
+    }, 500);
   } else {
-    router.push(game.route);
+    store.dispatch("callPageLoaderUpdation", true);
+    setTimeout(() => {
+      store.dispatch("callPageLoaderUpdation", false);
+      router.push(game.route);
+    }, 500);
   }
 }
 </script>

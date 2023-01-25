@@ -16,8 +16,22 @@
             }"
           ></i>
         </div>
-        <div class="word-to-guess">{{ wordToGuess }}</div>
-        <div class="word-list">
+        <Transition name="fade">
+          <div
+            class="word-to-guess"
+            :class="{
+              faded: faded,
+            }"
+          >
+            {{ wordToGuess }}
+          </div>
+        </Transition>
+        <div
+          class="word-list"
+          :class="{
+            faded: faded,
+          }"
+        >
           <div
             class="word-list_item"
             @click="chooseWord(word.value, wordToGuess)"
@@ -56,6 +70,7 @@ import { assertFlowDeclaration } from "@babel/types";
 const store = useStore();
 const lives = ref(3);
 const counter = ref(1);
+const faded = ref(false);
 const translations = reactive([
   {
     level: "A1",
@@ -471,9 +486,13 @@ function chooseWord(chosenWord, russianWord) {
     .words.filter((item) => item.ru === russianWord)[0].en;
 
   if (chosenWord === enWord) {
-    wordToGuess.value = randomRussianWord();
-    wordList = randomEnglishWords(wordToGuess.value);
-    counter.value++;
+    faded.value = true;
+    setTimeout(() => {
+      faded.value = false;
+      wordToGuess.value = randomRussianWord();
+      wordList = randomEnglishWords(wordToGuess.value);
+      counter.value++;
+    }, 300);
   } else {
     lives.value--;
   }
@@ -506,13 +525,25 @@ function restart() {
   text-transform: uppercase;
   font-weight: 500;
   text-align: center;
+  transition: 0.2s ease-in-out;
 }
 .word-list {
   margin-top: 50px;
   display: flex;
   flex-direction: column;
   row-gap: 20px;
+  transition: 0.2s ease-in-out;
 }
+
+.questions {
+  transition: 0.5s ease-in-out;
+}
+
+.visible {
+  opacity: 0;
+  visibility: visible;
+}
+
 .word-list_item {
   padding: 20px;
   background-color: #1544c0;
@@ -553,5 +584,20 @@ function restart() {
   font-weight: 500px;
   color: #000;
   font-size: 30px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.faded {
+  opacity: 0;
+  visibility: hidden;
 }
 </style>

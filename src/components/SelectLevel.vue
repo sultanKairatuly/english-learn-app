@@ -23,8 +23,12 @@ const router = useRouter();
 const store = useStore();
 
 function selectLevel(level) {
-  store.dispatch("callLevelUpdation", level);
-  router.push(store.state.game.route);
+  store.dispatch("callPageLoaderUpdation", true);
+  setTimeout(() => {
+    store.dispatch("callLevelUpdation", level);
+    router.push(store.state.game.route);
+    store.dispatch("callPageLoaderUpdation", false);
+  }, 500);
 }
 
 const levels = reactive(["A1", "A2", "B1", "B2", "C1", "C2"]);

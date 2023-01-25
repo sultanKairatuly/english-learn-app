@@ -116,4 +116,19 @@ const fluids = [
     width: 100%;
   }
 }
+
+@media (max-width: 425px) {
+  .fluid_item {
+    padding: 45px;
+  }
+  .fluid_item-icon {
+    font-size: 40px;
+  }
+  .fluid-item_title {
+    font-size: 20px;
+  }
+  .fluid_item-subtitle {
+    font-size: 13px;
+  }
+}
 </style>

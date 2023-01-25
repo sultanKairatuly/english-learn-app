@@ -1,14 +1,48 @@
 <template>
-  <AppHeader />
-  <div class="app">
-    <router-view></router-view>
+  <div
+    class="loader_container"
+    :class="{
+      visible: store.state.loader,
+    }"
+  >
+    <span class="loader"></span>
   </div>
-  <AppFooter />
+
+  <div
+    class="app"
+    v-if="!store.state.loader"
+    :class="{
+      visible: !store.state.loader,
+      loading: store.state.pageLoader,
+    }"
+  >
+    <AppHeader />
+    <div
+      class="page-loader_container"
+      :class="{
+        visible: store.state.pageLoader,
+      }"
+    >
+      <span class="loader"></span>
+    </div>
+    <router-view v-if="!store.state.pageLoader"></router-view>
+    <AppFooter v-if="!store.state.pageLoader" />
+  </div>
 </template>
 
 <script setup>
 import AppHeader from "./components/AppHeader.vue";
 import AppFooter from "./components/AppFooter.vue";
+import { useStore } from "vuex";
+import { computed } from "vue";
+
+const scrollWide = computed(() => {
+  return window.offsetWidth - window.clientWidth + "px";
+});
+const store = useStore();
+setTimeout(() => {
+  store.dispatch("callLoaderUpdation", false);
+}, 1000);
 </script>
 
 <style>
@@ -20,12 +54,81 @@ import AppFooter from "./components/AppFooter.vue";
   font-family: "Montserrat", sans-serif;
 }
 
-img {
-  max-width: 100%;
+.app {
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
 }
 
 .container {
   padding-top: 102px;
   min-height: 100vh;
+}
+
+.loading {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.visible-content {
+  z-index: 200;
+}
+
+.page-loader_container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 120;
+  background-color: #fff;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.4s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+}
+
+.loader_container {
+  position: absolute;
+  z-index: 200;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.4s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-block;
+  border-top: 4px solid #1544c0;
+  border-right: 3px solid transparent;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+  margin-right: 30px;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.visible {
+  opacity: 1;
+  visibility: visible;
 }
 </style>

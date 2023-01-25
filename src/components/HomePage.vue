@@ -273,12 +273,14 @@ const infos = reactive([
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
   margin-top: 50px;
 }
 .title {
   font-size: 90px;
   color: #1544c0;
   font-weight: 500;
+  text-align: center;
   margin-bottom: 10px;
 }
 
@@ -373,6 +375,11 @@ const infos = reactive([
   left: 50%;
   transform: translate(-47%, -50%);
   transition: 0.4s ease-in-out;
+}
+
+.second-text {
+  text-align: center;
+  padding: 0 10px;
 }
 
 .is-hidden {
@@ -617,9 +624,6 @@ const infos = reactive([
     padding: 35px;
     font-size: 40px;
   }
-
-  .hover-border {
-  }
 }
 
 @media (max-width: 840px) {
@@ -627,6 +631,10 @@ const infos = reactive([
     flex-direction: column;
     row-gap: 5px;
     justify-content: center;
+  }
+
+  .description {
+    width: fit-content;
   }
 }
 
@@ -646,6 +654,103 @@ const infos = reactive([
 
   .sessions {
     padding: 0px 20px;
+  }
+
+  .topic {
+    padding: 15px;
+    height: 270px;
+    width: 265px;
+  }
+  .topic_title {
+    font-size: 25px;
+  }
+
+  .topic-icon {
+    padding: 35px;
+    font-size: 35px;
+    transform: translate(-50%, -170%);
+  }
+
+  .hover-border {
+    transform: translate(-50%, -150%);
+    padding: 57px 60px;
+  }
+}
+
+@media (max-width: 425px) {
+  .title {
+    font-size: 40px;
+    padding: 0 20px;
+  }
+
+  .session_title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 22px;
+    padding: 0px 15px;
+  }
+
+  .description {
+    font-size: 14px;
+    padding: 0 60px;
+  }
+
+  .animation-text {
+    padding: 20px 10px;
+    font-size: 18px;
+  }
+
+  .word-rotator {
+    padding: 20px 10px;
+  }
+
+  .word-rotator_item {
+    font-size: 18px;
+  }
+
+  .sessions {
+    padding: 0px 20px;
+  }
+
+  .information {
+    padding: 40px;
+  }
+
+  .information_item {
+    width: 50%;
+  }
+
+  .information-item_title {
+    font-size: 32px;
+  }
+
+  .extra-info {
+    margin: 0;
+    font-size: 14px;
+    padding: 0 60px;
+  }
+
+  .topic {
+    padding: 10px;
+    height: 220px;
+    width: 220px;
+  }
+  .topic_title {
+    font-size: 20px;
+  }
+
+  .topic_description {
+    font-size: 11px;
+    padding: 0 15px;
+  }
+
+  .topic-icon {
+    padding: 25px;
+    font-size: 30px;
+    width: fit-content;
+    transform: translate(-50%, -170%);
   }
 }
 </style>

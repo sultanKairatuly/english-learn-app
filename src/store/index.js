@@ -4,6 +4,8 @@ export default createStore({
   state: {
     level: localStorage.getItem("level"),
     game: JSON.parse(localStorage.getItem("game")),
+    loader: true,
+    pageLoader: false,
   },
   getters: {
     getGame(state) {
@@ -22,6 +24,12 @@ export default createStore({
       localStorage.setItem("level", newLevel);
       state.level = newLevel;
     },
+    updateLoader(state, payload) {
+      state.loader = payload;
+    },
+    updatePageLoader(state, payload) {
+      state.pageLoader = payload;
+    },
   },
   actions: {
     callGameUpdation({ commit }, newGame) {
@@ -29,6 +37,12 @@ export default createStore({
     },
     callLevelUpdation({ commit }, newLevel) {
       commit("updateLevel", newLevel);
+    },
+    callLoaderUpdation({ commit }, payload) {
+      commit("updateLoader", payload);
+    },
+    callPageLoaderUpdation({ commit }, payload) {
+      commit("updatePageLoader", payload);
     },
   },
   modules: {},

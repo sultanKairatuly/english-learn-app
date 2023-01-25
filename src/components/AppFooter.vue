@@ -174,4 +174,31 @@
     width: 540px;
   }
 }
+
+@media (max-width: 425px) {
+  .footer_row-top-content {
+    width: 80%;
+  }
+  .footer_row-bottom-content {
+    width: 80%;
+  }
+
+  .footer_top_item-description {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .footer_top_item-title {
+    font-size: 12px;
+  }
+
+  .footer_top_item-contact {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .footer_row-bottom-item {
+    font-size: 10px;
+  }
+}
 </style>
