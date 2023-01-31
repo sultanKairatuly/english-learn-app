@@ -53,12 +53,21 @@ const props = defineProps({
   margin-bottom: 20px;
 }
 
+.dark .session-icon{
+  color: #8774e1;
+}
+
+.dark .session-text_subtitle {
+  color: rgb(185, 185, 185);
+}
+
+.dark .session-text_title{
+  color: #fff;
+}
+
 @media (max-width: 1550px) {
   .session-icon {
     font-size: 32px;
-  }
-
-  .session_text {
   }
 
   .session-text_title {

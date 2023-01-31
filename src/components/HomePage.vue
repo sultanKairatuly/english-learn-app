@@ -63,9 +63,12 @@
             class="topic"
             @mouseenter="hoveredTopic = topic.title"
             @mouseleave="hoveredTopic = ''"
+            @click="checkTopic(topic)"
             v-for="topic in topics"
             :style="{
-              'border-bottom': `7px solid ${topic.backColor}`,
+              'border-bottom': store.state.theme.isDark
+                ? `7px solid ${topic.backColor.dark}`
+                : `7px solid ${topic.backColor.light}`,
             }"
           >
             <div class="icon_container">
@@ -73,14 +76,17 @@
                 class="fa-solid topic-icon"
                 :class="topic.icon"
                 :style="{
-                  background: topic.backColor,
+                  background: store.state.theme.isDark
+                    ? topic.backColor.dark
+                    : topic.backColor.light,
                 }"
-                @click="$router.push(topic.route)"
               ></i>
               <div
                 class="hover-border"
                 :style="{
-                  border: `6px solid ${topic.backColor}`,
+                  border: store.state.theme.isDark
+                    ? `6px solid ${topic.backColor.dark}`
+                    : `6px solid ${topic.backColor.light}`,
                 }"
                 :class="{
                   'active-hover-border': hoveredTopic === topic.title,
@@ -90,9 +96,10 @@
 
             <div
               class="topic_title"
-              @click="$router.push(topic.route)"
               :style="{
-                color: topic.backColor,
+                color: store.state.theme.isDark
+                    ? topic.backColor.dark
+                    : topic.backColor.light,
               }"
             >
               {{ topic.title }}
@@ -125,7 +132,13 @@ import { ref, watch, reactive, onMounted } from "vue";
 import SessionList from "../components/SessionList.vue";
 import FAQuestions from "./FAQuestions.vue";
 import FluidSection from "./FluidSection.vue";
+import { useManualPageLoader } from "../composables/manualPageLoader";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
+const store = useStore();
+const router = useRouter();
+const { load } = useManualPageLoader();
 const MainWidth = ref("200px");
 let words = ["Невероятно", "Удивительно", "Верь или нет", "Ошеломляюще"];
 const activeWord = ref(words[0]);
@@ -158,30 +171,30 @@ const topics = reactive([
   {
     title: "Fun and Games",
     subtitle: "All work, no play makes Jack / Jill a dull boy / girl.",
-    backColor: "#0000cc",
+    backColor: { dark: "#6053a1", light: "#0000cc" },
     icon: "fa-puzzle-piece",
     route: "/games",
   },
   {
     title: "English Grammar",
     subtitle: "Your guide to English grammar.",
-    backColor: "#000066",
+    backColor: { dark: "#6857bd", light: "#000066" },
     icon: "fa-book",
-    route: "",
+    route: "/choose-topic/grammar-topic",
   },
   {
     title: "Vocabulary",
     subtitle: "Go back to basics. For anyone who needs a bit of revision.",
-    backColor: "#3366ff",
+    backColor: { dark: "#8774e1", light: "#3366ff" },
     icon: "fa-user",
-    route: "",
+    route: "/choose-topic/vocabulary-topic",
   },
   {
     title: "English Test",
     subtitle: "Have you really learnt what you think you have learnt?",
-    backColor: "#3399ff",
+    backColor: { dark: "#947ffc", light: "#3399ff" },
     icon: "fa-star",
-    route: "",
+    route: "/choose-topic/test-topic",
   },
 ]);
 
@@ -255,6 +268,11 @@ const infos = reactive([
     subtitle: "Online Videos",
   },
 ]);
+
+function checkTopic(topic) {
+  load();
+  router.push(topic.route);
+}
 </script>
 
 <style scoped>
@@ -266,6 +284,7 @@ const infos = reactive([
   display: flex;
   justify-content: center;
   width: 100%;
+  transition: 0.3s ease-in-out;
 }
 .homepage {
   margin: 0 auto;
@@ -274,11 +293,12 @@ const infos = reactive([
   justify-content: center;
   align-items: center;
   width: 100%;
+  transition: 0.3s ease-in-out;
   margin-top: 50px;
 }
 .title {
   font-size: 90px;
-  color: #1544c0;
+  color: #1554c0;
   font-weight: 500;
   text-align: center;
   margin-bottom: 10px;
@@ -488,6 +508,62 @@ const infos = reactive([
 .active-hover-border {
   opacity: 1;
   visibility: visible;
+}
+
+.dark .homepage {
+  background-color: #253240;
+}
+
+.dark .container {
+  background-color: #253240;
+}
+
+.dark .title {
+  color: #8774e1;
+}
+
+.dark .description {
+  color: #fff;
+}
+
+.dark .secondary-section {
+  background-color: #1e2833;
+}
+
+.dark .word-rotator_item {
+  color: #fff;
+}
+
+.dark .word-rotator {
+  background-color: #8774e1;
+}
+.dark .animation-text {
+  color: #fff;
+}
+
+.dark .extra-info {
+  color: #f7f7f7;
+}
+
+.dark .subtitle{
+  color: #8774e1;
+}
+
+.dark .topic {
+  background-color: #25313d;
+  border: 2px solid #000;
+}
+
+.dark .topic_description {
+  color: #fff;
+}
+
+.dark .session_title{
+  color: #fff;
+}
+
+.dark .information{
+  background-color: #8774e1;
 }
 
 @media (max-width: 1550px) {
@@ -751,6 +827,17 @@ const infos = reactive([
     font-size: 30px;
     width: fit-content;
     transform: translate(-50%, -170%);
+  }
+}
+
+@media (max-width: 375px) {
+  .description {
+    padding: 0 10px;
+    font-size: 16px;
+  }
+
+  .title {
+    font-size: 35px;
   }
 }
 </style>

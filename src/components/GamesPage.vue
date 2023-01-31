@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1 class="title">Games</h1>
+    <h1 class="title">Игры</h1>
     <div class="games">
       <div
         tag="div"
@@ -33,10 +33,11 @@ import { v4 as uuidv4 } from "uuid";
 import { reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { useManualPageLoader } from "../composables/manualPageLoader";
 
 const router = useRouter();
 const store = useStore();
-
+const { load } = useManualPageLoader();
 const games = reactive([
   {
     title: "Викторина",
@@ -89,26 +90,21 @@ function changeHovered(game) {
 function selectGame(game) {
   store.dispatch("callGameUpdation", game);
   if (game.level) {
-    store.dispatch("callPageLoaderUpdation", true);
-    setTimeout(() => {
-      store.dispatch("callPageLoaderUpdation", false);
-      router.push("/level");
-    }, 500);
+    load();
+    router.push("/level");
   } else {
-    store.dispatch("callPageLoaderUpdation", true);
-    setTimeout(() => {
-      store.dispatch("callPageLoaderUpdation", false);
-      router.push(game.route);
-    }, 500);
+    load();
+    router.push(game.route);
   }
 }
 </script>
 
 <style scoped>
 .title {
-  font-size: 90px;
+  font-size: 80px;
   text-transform: uppercase;
   color: #1544c0;
+  margin: 40px;
   text-align: center;
 }
 
@@ -120,7 +116,7 @@ function selectGame(game) {
   margin: 0 auto;
   justify-content: center;
   align-items: center;
-  height: 70vh;
+  height: 100%;
 }
 
 .game {
@@ -161,5 +157,104 @@ function selectGame(game) {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+}
+
+.dark .title {
+  color: #8774e1;
+}
+
+@media (max-width: 1440px) {
+  .title {
+    font-size: 60px;
+    text-transform: uppercase;
+    color: #1544c0;
+    text-align: center;
+  }
+
+  .games {
+    column-gap: 45px;
+    row-gap: 30px;
+    padding-bottom: 40px;
+  }
+
+  .game {
+    height: 250px;
+    width: 300px;
+    padding: 25px;
+  }
+}
+
+@media (max-width: 425px) {
+  .title {
+    font-size: 50px;
+    text-transform: uppercase;
+    color: #1544c0;
+    text-align: center;
+    margin: 30px;
+  }
+
+  .games {
+    row-gap: 20px;
+    padding-bottom: 40px;
+    height: 100%;
+  }
+
+  .game {
+    flex-direction: column;
+    width: 270px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 375px) {
+  .title {
+    font-size: 45px;
+    text-transform: uppercase;
+    color: #1544c0;
+    text-align: center;
+    margin: 25px;
+  }
+
+  .games {
+    row-gap: 20px;
+    padding-bottom: 40px;
+  }
+
+  .game {
+    flex-direction: column;
+    width: 250px;
+    padding: 20px;
+  }
+
+  .game_title {
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 320px) {
+  .title {
+    font-size: 40px;
+    text-transform: uppercase;
+    color: #1544c0;
+    text-align: center;
+    margin: 20px;
+  }
+
+  .games {
+    row-gap: 15px;
+    padding-bottom: 30px;
+    height: 100%;
+  }
+
+  .game {
+    flex-direction: column;
+    width: 230px;
+    padding: 20px;
+    height: 200px;
+  }
+
+  .game_title {
+    font-size: 22px;
+  }
 }
 </style>

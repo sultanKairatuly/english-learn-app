@@ -81,6 +81,10 @@ import SessionItem from "../components/SessionItem.vue";
   transform: translateY(2px);
 }
 
+.dark .alternative-text {
+  color: #8774e1;
+}
+
 @media (max-width: 1550px) {
   .alternative-text {
     font-size: 20px;

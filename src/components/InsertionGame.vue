@@ -906,5 +906,13 @@ function nextLevel() {
   font-family: "Roboto", sans-serif;
 }
 
+.dark .modal_content {
+  background-color: #1e2833;
+}
+
+.dark .result_title {
+  color: #fff;
+}
+
 
 </style>

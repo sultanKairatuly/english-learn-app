@@ -1,7 +1,14 @@
 <template>
+  <audio ref="failAudio">
+    <source
+      src="../assets/failsound/error-when-entering-the-game-menu-132111.mp3"
+    />
+  </audio>
+  <audio ref="successAudio">
+    <source src="../assets/successsound/interface-124464.mp3" />
+  </audio>
   <div class="container">
     <h1 class="title">Puzzle game</h1>
-
     <div class="content">
       <div class="question" v-if="counter < 10 && lives > 0">
         <div class="lives">
@@ -11,6 +18,7 @@
             :key="live"
             :class="{
               active: live <= lives,
+              shaking: live > lives,
             }"
           ></i>
         </div>
@@ -28,10 +36,10 @@
         </div>
         <div
           class="next"
-          :disabled="prevLetter.length === 0"
+          :disabled="!spaceIndex"
           @click="nextSentence(letter)"
           :class="{
-            'active-next': prevLetter,
+            'active-next': spaceIndex,
           }"
         >
           Дальше
@@ -52,10 +60,13 @@
 </template>
 
 <script setup>
-import { reactive, computed, ref } from "vue";
+import { reactive, ref } from "vue";
 import _ from "lodash";
 import { useStore } from "vuex";
 import FinishBlock from "./FinishBlock.vue";
+
+const failAudio = ref(null);
+const successAudio = ref(null);
 
 const counter = ref(1);
 const store = useStore();
@@ -248,22 +259,21 @@ function missed(string) {
   return str;
 }
 
-let prevLetter = ref("");
+let spaceIndex = ref(null);
 
 function selectLetter(selectedLetter) {
-  if (prevLetter.value) {
-    missedSentence.value = missedSentence.value.replace(
-      prevLetter.value,
-      selectedLetter
-    );
+  if (spaceIndex.value) {
+    let arr = missedSentence.value.split("");
+    arr.splice(spaceIndex.value, 1, selectedLetter);
+    missedSentence.value = arr.join("");
   } else {
+    spaceIndex.value = missedSentence.value.split("").indexOf("_");
     missedSentence.value = missedSentence.value.replace("_", selectedLetter);
   }
-  prevLetter.value = selectedLetter;
 }
 
 function nextSentence(letter) {
-  if (prevLetter.value) {
+  if (spaceIndex.value) {
     const replaced = missedSentence.value.replace("_", letter);
     if (replaced.toLowerCase() === sentence.value.toLowerCase()) {
       sentence.value = randomSentence();
@@ -273,10 +283,16 @@ function nextSentence(letter) {
         missedLetter.value,
         "_"
       );
-      prevLetter.value = "";
+      spaceIndex.value = null;
       counter.value++;
+      successAudio.value.pause();
+      successAudio.value.currentTime = 0;
+      successAudio.value.play();
     } else {
       lives.value--;
+      failAudio.value.pause();
+      failAudio.value.currentTime = 0;
+      failAudio.value.play();
     }
   } else {
     console.log("Select a letter");
@@ -310,8 +326,10 @@ function restart() {
   border-radius: 3px;
   margin: 100px auto;
   padding: 2vw;
+  height: 100%;
   position: relative;
   box-shadow: 0px 0px 12px 3px rgba(34, 60, 80, 0.2);
+  min-height: 30vw;
 }
 
 .text {
@@ -327,9 +345,11 @@ function restart() {
 
 .letters {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   row-gap: 20px;
   margin-top: 30px;
+  column-gap: 30px;
+  flex-wrap: wrap;
 }
 
 .letter {
@@ -342,6 +362,7 @@ function restart() {
   border-radius: 5px;
   cursor: pointer;
   transition: 0.1s ease-in-out;
+  column-gap: 30px;
 }
 
 .next {
@@ -397,5 +418,181 @@ function restart() {
   font-weight: 500px;
   color: #000;
   font-size: 30px;
+}
+
+.shaking {
+  animation: shake 0.5s;
+}
+
+.dark .content{
+  background-color: #1e2833;
+}
+
+.dark .text {
+  background-color: #8774e1;
+}
+
+
+@keyframes shake {
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+  10% {
+    transform: translate(-1px, -2px) rotate(-1deg);
+  }
+  20% {
+    transform: translate(-3px, 0px) rotate(1deg);
+  }
+  30% {
+    transform: translate(3px, 2px) rotate(0deg);
+  }
+  40% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+  60% {
+    transform: translate(-3px, 1px) rotate(0deg);
+  }
+  70% {
+    transform: translate(3px, 1px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(-1px, -1px) rotate(1deg);
+  }
+  90% {
+    transform: translate(1px, 2px) rotate(0deg);
+  }
+  100% {
+    transform: translate(1px, -2px) rotate(-1deg);
+  }
+}
+
+@media (max-width: 1440px) {
+  .title {
+    margin: 30px;
+    font-size: 40px;
+  }
+
+  .text {
+    padding: 10px 20px;
+    font-size: 23px;
+    width: 60%;
+    margin: 0 auto;
+  }
+
+  .like {
+    font-size: 35px;
+    color: rgb(131, 131, 131);
+  }
+
+  .active {
+    color: red;
+  }
+
+  .answers {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 1440px) {
+  .title {
+    margin: 30px;
+    font-size: 40px;
+  }
+
+  .text {
+    padding: 10px 20px;
+    font-size: 20px;
+    width: 95%;
+    margin-top: 120px;
+    margin-bottom: 50px;
+  }
+
+  .lives {
+    left: 50%;
+    justify-content: center;
+    transform: translateX(-50%);
+    top: 80px;
+  }
+
+  .answers {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .active {
+    color: red;
+  }
+
+  .answers {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 425px) {
+  .title {
+    text-align: center;
+  }
+  .text {
+    font-size: 18px;
+  }
+  .letter {
+    padding: 30px;
+    font-size: 14px;
+  }
+
+  .next {
+    font-size: 18px;
+    padding: 15px 25px;
+  }
+
+  .content {
+    width: 95vw;
+  }
+}
+
+@media (max-width: 375px) {
+  .text {
+    font-size: 17px;
+  }
+  .letter {
+    padding: 20px;
+    font-size: 16px;
+  }
+
+  .like {
+    font-size: 30px;
+  }
+
+  .answers {
+    font-size: 25px;
+  }
+
+  .next {
+    font-size: 17px;
+    padding: 15px 25px;
+  }
+
+  .content {
+    margin: 50px auto;
+  }
+}
+
+@media (max-width: 320px) {
+  .text {
+    font-size: 16px;
+  }
+
+  .letter {
+    padding: 20px;
+    font-size: 15px;
+  }
+
+  .next {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
 }
 </style>

@@ -3,6 +3,8 @@
     class="loader_container"
     :class="{
       visible: store.state.loader,
+      'scroll-visible': store.state.loader,
+      'dark-loader': store.state.theme.isDark,
     }"
   >
     <span class="loader"></span>
@@ -14,6 +16,7 @@
     :class="{
       visible: !store.state.loader,
       loading: store.state.pageLoader,
+      dark: store.state.theme.isDark,
     }"
   >
     <AppHeader />
@@ -21,6 +24,7 @@
       class="page-loader_container"
       :class="{
         visible: store.state.pageLoader,
+        'dark-loader': store.state.theme.isDark,
       }"
     >
       <span class="loader"></span>
@@ -34,12 +38,15 @@
 import AppHeader from "./components/AppHeader.vue";
 import AppFooter from "./components/AppFooter.vue";
 import { useStore } from "vuex";
-import { computed } from "vue";
-
+import { computed, watch, ref } from "vue";
+const store = useStore();
 const scrollWide = computed(() => {
   return window.offsetWidth - window.clientWidth + "px";
 });
-const store = useStore();
+
+watch(ref(store.state.loader), (nv) => {
+  console.log(nv);
+});
 setTimeout(() => {
   store.dispatch("callLoaderUpdation", false);
 }, 1000);
@@ -50,6 +57,7 @@ setTimeout(() => {
 * {
   margin: 0;
   padding: 0;
+  transition: 0.3s ease-in-out;
   box-sizing: border-box;
   font-family: "Montserrat", sans-serif;
 }
@@ -61,7 +69,7 @@ setTimeout(() => {
 }
 
 .container {
-  padding-top: 102px;
+  padding-top: 90px;
   min-height: 100vh;
 }
 
@@ -85,25 +93,24 @@ setTimeout(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: 0.4s ease-in-out;
+  transition: 0.2s ease-in-out;
   opacity: 0;
   visibility: hidden;
-  overflow: hidden;
 }
 
 .loader_container {
   position: absolute;
   z-index: 200;
   width: 100%;
-  height: 100%;
+  height: 101vh;
   background-color: #fff;
-  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: 0.4s ease-in-out;
+  transition: 0.2s ease-in-out;
   opacity: 0;
   visibility: hidden;
+  padding-right: 0px;
 }
 
 .loader {
@@ -115,7 +122,18 @@ setTimeout(() => {
   border-right: 3px solid transparent;
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
-  margin-right: 30px;
+}
+
+.dark-loader {
+  background-color: #253240;
+}
+
+.dark-loader .loader {
+  border-top: 4px solid #8774e1;
+}
+
+.dark .container {
+  background-color: #253240;
 }
 
 @keyframes rotation {
@@ -130,5 +148,25 @@ setTimeout(() => {
 .visible {
   opacity: 1;
   visibility: visible;
+}
+
+.scroll-visible {
+  overflow-y: visible;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding-top: 87px;
+  }
+}
+
+@media (max-width: 425px) {
+  .container {
+    padding-top: 50px;
+  }
+}
+
+.dark {
+  background-color: grey;
 }
 </style>

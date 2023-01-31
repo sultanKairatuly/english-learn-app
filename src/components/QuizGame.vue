@@ -1,4 +1,12 @@
 <template>
+  <audio ref="failAudio">
+    <source
+      src="../assets/failsound/error-when-entering-the-game-menu-132111.mp3"
+    />
+  </audio>
+  <audio ref="successAudio">
+    <source src="../assets/successsound/interface-124464.mp3" />
+  </audio>
   <div class="container">
     <h1 class="title">Quiz game</h1>
     <div class="content">
@@ -11,12 +19,14 @@
           <i
             class="fa-sharp fa-solid fa-heart like"
             v-for="live in 3"
+            :key="live"
             :class="{
               active: live <= lives,
+              shaking: live > lives,
             }"
           ></i>
         </div>
-        <Transition name="fade">
+        <div class="task">
           <div
             class="word-to-guess"
             :class="{
@@ -25,20 +35,23 @@
           >
             {{ wordToGuess }}
           </div>
-        </Transition>
-        <div
-          class="word-list"
-          :class="{
-            faded: faded,
-          }"
-        >
           <div
-            class="word-list_item"
-            @click="chooseWord(word.value, wordToGuess)"
-            v-for="word in wordList"
-            :key="word.id"
+            class="word-list"
+            :class="{
+              faded: faded,
+            }"
           >
-            {{ word.value }}
+            <div
+              class="word-list_item"
+              @click="chooseWord(word.value, wordToGuess)"
+              v-for="word in wordList"
+              :key="word.id"
+              :class="{
+                correct: correctWord === word,
+              }"
+            >
+              {{ word.value }}
+            </div>
           </div>
         </div>
       </div>
@@ -47,13 +60,17 @@
         @restart="restart"
       >
         <template #result
-          >Поздравляю, вы успешно прошли этот уровень :)</template
-        >
+          ><div class="congrats">
+            Поздравляю, вы успешно прошли этот уровень :)
+          </div>
+        </template>
       </FinishBlock>
       <FinishBlock v-else @restart="restart">
-        <template #result
-          >К сожалению, вы потратили все свои попытки :(</template
-        >
+        <template #result>
+          <div class="congrats">
+            К сожалению, вы потратили все свои попытки :(
+          </div>
+        </template>
       </FinishBlock>
     </div>
   </div>
@@ -65,10 +82,14 @@ import { reactive, ref, computed } from "vue";
 import { useStore } from "vuex";
 import { v4 as uuidv4 } from "uuid";
 import FinishBlock from "../components/FinishBlock.vue";
-import { assertFlowDeclaration } from "@babel/types";
+import { useManualPageLoader } from "../composables/manualPageLoader";
 
+const { load } = useManualPageLoader();
+const failAudio = ref(null);
+const successAudio = ref(null);
 const store = useStore();
 const lives = ref(3);
+const correctWord = ref(null);
 const counter = ref(1);
 const faded = ref(false);
 const translations = reactive([
@@ -461,23 +482,34 @@ const wordToGuess = ref(randomRussianWord());
 let wordList = reactive(randomEnglishWords(wordToGuess.value));
 
 function randomEnglishWords(ruWord) {
-  const object = {};
-
   const enWord = translations
     .find((item) => item.level === store.state.level)
     .words.filter((item) => item.ru === ruWord)[0].en;
 
   const shuffledWithCorrect = _.shuffle(
-    A1EnglishWords.value.slice(0, 2).concat([enWord])
+    _.shuffle(A1EnglishWords.value).slice(0, 2).concat([enWord])
   );
-  for (let word of shuffledWithCorrect) {
-    object[word] = {
-      value: word,
-      id: uuidv4(),
-    };
+  return addWordsToObject(shuffledWithCorrect, enWord);
+}
+
+function addWordsToObject(wordsArray, rightWord) {
+  let objectWithWords = {};
+
+  for (let word of wordsArray) {
+    if (word in objectWithWords) {
+      const wordsArray = _.shuffle(
+        _.shuffle(A1EnglishWords.value).slice(0, 2).concat([rightWord])
+      );
+      return addWordsToObject(wordsArray, rightWord);
+    } else {
+      objectWithWords[word] = {
+        value: word,
+        id: uuidv4(),
+      };
+    }
   }
 
-  return object;
+  return objectWithWords;
 }
 
 function chooseWord(chosenWord, russianWord) {
@@ -486,6 +518,9 @@ function chooseWord(chosenWord, russianWord) {
     .words.filter((item) => item.ru === russianWord)[0].en;
 
   if (chosenWord === enWord) {
+    successAudio.value.pause();
+    successAudio.value.currentTime = 0;
+    successAudio.value.play();
     faded.value = true;
     setTimeout(() => {
       faded.value = false;
@@ -495,16 +530,25 @@ function chooseWord(chosenWord, russianWord) {
     }, 300);
   } else {
     lives.value--;
+    failAudio.value.currentTime = 0;
+    failAudio.value.play();
+    failAudio.value.play();
   }
 }
 
 function restart() {
+  load();
   counter.value = 1;
-  assertFlowDeclaration;
   lives.value = 3;
 }
 </script>
 <style scoped>
+.task {
+  display: flex;
+  flex-direction: column;
+  height: 40vh;
+  justify-content: space-between;
+}
 .title {
   margin: 50px;
   font-size: 50px;
@@ -516,7 +560,7 @@ function restart() {
   background-color: #fff;
   border-radius: 3px;
   margin: 100px auto;
-  padding: 2vw;
+  padding: 50px;
   position: relative;
   box-shadow: 0px 0px 12px 3px rgba(34, 60, 80, 0.2);
 }
@@ -528,10 +572,10 @@ function restart() {
   transition: 0.2s ease-in-out;
 }
 .word-list {
-  margin-top: 50px;
   display: flex;
   flex-direction: column;
-  row-gap: 20px;
+  row-gap: 30px;
+  justify-content: center;
   transition: 0.2s ease-in-out;
 }
 
@@ -568,9 +612,14 @@ function restart() {
   top: 20px;
 }
 
+.correct {
+  background-color: green;
+}
+
 .like {
   font-size: 40px;
   color: rgb(131, 131, 131);
+  transition: 0.1s ease-in;
 }
 
 .active {
@@ -586,18 +635,284 @@ function restart() {
   font-size: 30px;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
 .faded {
   opacity: 0;
   visibility: hidden;
+}
+
+.shaking {
+  animation: shake 0.5s;
+}
+
+.dark .content {
+  background-color: #1e2833;
+}
+
+.dark .word-to-guess {
+  color: #fff;
+}
+
+.dark .answers {
+  color: #fff;
+}
+
+.dark .word-list_item {
+  background-color: #8774ec;
+}
+
+.dark .congrats {
+  color: #fff;
+}
+
+
+
+@keyframes shake {
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+  10% {
+    transform: translate(-1px, -2px) rotate(-1deg);
+  }
+  20% {
+    transform: translate(-3px, 0px) rotate(1deg);
+  }
+  30% {
+    transform: translate(3px, 2px) rotate(0deg);
+  }
+  40% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+  60% {
+    transform: translate(-3px, 1px) rotate(0deg);
+  }
+  70% {
+    transform: translate(3px, 1px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(-1px, -1px) rotate(1deg);
+  }
+  90% {
+    transform: translate(1px, 2px) rotate(0deg);
+  }
+  100% {
+    transform: translate(1px, -2px) rotate(-1deg);
+  }
+}
+
+@media (max-width: 1440px) {
+  .congrats {
+    font-size: 40px;
+  }
+  .title {
+    margin: 30px;
+    font-size: 40px;
+    color: red;
+  }
+
+  .word-to-guess {
+    font-size: 35px;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-align: center;
+    transition: 0.2s ease-in-out;
+  }
+  .word-list {
+    row-gap: 20px;
+  }
+
+  .word-list_item {
+    padding: 15px;
+    background-color: #1544c0;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 20px;
+    width: 200px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+  }
+
+  .lives {
+    position: absolute;
+    display: flex;
+    column-gap: 10px;
+    right: 20px;
+    top: 20px;
+  }
+
+  .like {
+    font-size: 35px;
+    color: rgb(131, 131, 131);
+    transition: 0.1s ease-in;
+  }
+
+  .active {
+    color: red;
+  }
+
+  .answers {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    font-weight: 500px;
+    color: #000;
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .congrats {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 800px) {
+  .title {
+    margin: 30px;
+    font-size: 35px;
+    color: red;
+  }
+
+  .congrats {
+    font-size: 30px;
+  }
+
+  .word-to-guess {
+    font-size: 30px;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-align: center;
+    transition: 0.2s ease-in-out;
+  }
+  .word-list {
+    row-gap: 20px;
+  }
+
+  .word-list_item {
+    padding: 15px;
+    background-color: #1544c0;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 18px;
+    width: 100%;
+    border-radius: 3px;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.3s ease-in-out;
+  }
+
+  .lives {
+    position: absolute;
+    display: flex;
+    column-gap: 10px;
+    right: 20px;
+    top: 20px;
+  }
+
+  .like {
+    font-size: 30px;
+    color: rgb(131, 131, 131);
+    transition: 0.1s ease-in;
+  }
+
+  .active {
+    color: red;
+  }
+
+  .answers {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    font-weight: 500px;
+    color: #000;
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 640px) {
+  .answers {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .lives {
+    left: 50%;
+    transform: translateX(-50%);
+    justify-content: center;
+    top: 70px;
+  }
+
+  .word-to-guess {
+    margin-top: 70px;
+    font-size: 28px;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-align: center;
+    transition: 0.2s ease-in-out;
+  }
+}
+
+@media (max-width: 420px) {
+  .word-to-guess {
+    font-size: 25px;
+    margin-top: 90px;
+  }
+
+  .content {
+    padding: 40px;
+  }
+}
+
+@media (max-width: 375px) {
+  .word-to-guess {
+    font-size: 23px;
+  }
+
+  .content {
+    padding: 30px;
+  }
+}
+
+@media (max-width: 320px) {
+  .word-to-guess {
+    font-size: 21px;
+    margin-top: 110px;
+  }
+
+  .content {
+    width: 95vw;
+  }
+
+  .title {
+    font-size: 35px;
+  }
+
+  .content {
+    padding: 15px;
+  }
+
+  .word-list_item {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 425px) {
+  .congrats {
+    font-size: 25px;
+  }
+
+  .title {
+    text-align: center;
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 800px) {
+  .congrats {
+    font-size: 20px;
+  }
 }
 </style>

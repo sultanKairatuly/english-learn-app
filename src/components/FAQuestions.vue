@@ -5,7 +5,11 @@
         <div class="section_title">And there's <b>more</b></div>
         <div class="questions">
           <div class="left">
-            <div class="question" v-for="question in leftQuestions">
+            <div
+              class="question"
+              :key="question.id"
+              v-for="question in leftQuestions"
+            >
               <div class="question-image">
                 <i class="question_icon" :class="question.icon"></i>
               </div>
@@ -18,7 +22,11 @@
             </div>
           </div>
           <div class="right">
-            <div class="question" v-for="question in rightQuestions">
+            <div
+              class="question"
+              :key="question.id"
+              v-for="question in rightQuestions"
+            >
               <div class="question-image">
                 <i class="question_icon" :class="question.icon"></i>
               </div>
@@ -38,9 +46,11 @@
           <div
             class="accordion_item"
             v-for="accordion in accordionItems"
+            :key="accordion.id"
             @click="accordion.isOpen = !accordion.isOpen"
             :class="{
               [`opened-${accordion.counter}`]: accordion.isOpen,
+              small: accordion.isOpen,
             }"
           >
             <div class="header">
@@ -64,6 +74,7 @@
 
 <script setup>
 import { reactive } from "vue";
+import { v4 as uuidv4 } from "uuid";
 
 const accordionItems = reactive([
   {
@@ -74,6 +85,7 @@ const accordionItems = reactive([
     isOpen: false,
     icon: "fa-solid fa-bullseye",
     counter: "one",
+    id: uuidv4(),
   },
   {
     title: "Our mission",
@@ -83,6 +95,7 @@ const accordionItems = reactive([
     isOpen: false,
     icon: "fa-solid fa-rocket",
     counter: "two",
+    id: uuidv4(),
   },
   {
     title: "Our vision",
@@ -93,6 +106,7 @@ const accordionItems = reactive([
     isOpen: false,
     icon: "fa-solid fa-binoculars",
     counter: "three",
+    id: uuidv4(),
   },
   {
     title: "About us",
@@ -111,6 +125,7 @@ const accordionItems = reactive([
     isOpen: false,
     icon: "fa-solid fa-users",
     counter: "four",
+    id: uuidv4(),
   },
   {
     title: "Disclaimer",
@@ -122,6 +137,7 @@ const accordionItems = reactive([
     isOpen: false,
     icon: "fa-solid fa-balance-scale",
     counter: "five",
+    id: uuidv4(),
   },
 ]);
 
@@ -130,21 +146,25 @@ const leftQuestions = reactive([
     title: "Кто?",
     description: "Мы преподаватели английского языка и изучающие языки.",
     icon: "fa-solid fa-mask",
+    id: uuidv4(),
   },
   {
     title: "Что?",
     description: "Чтение, аудирование, разговор, письмо.",
     icon: "fa-solid fa-microscope",
+    id: uuidv4(),
   },
   {
     title: "Где?",
     description: "Все, что мы делаем, мы делаем онлайн.",
     icon: "fa-solid fa-compass",
+    id: uuidv4(),
   },
   {
     title: "Когда?",
     description: "Все наши сеансы расписаны в календаре",
     icon: "icon-calendar",
+    id: uuidv4(),
   },
 ]);
 
@@ -153,22 +173,26 @@ const rightQuestions = reactive([
     title: "Как?",
     description: "С помощью волонтеров и спонсоров.",
     icon: "fa-solid fa-gear",
+    id: uuidv4(),
   },
   {
     title: "Почему?",
     description: "Почему бы и нет",
     icon: "fa-solid fa-child",
+    id: uuidv4(),
   },
   {
     title: "Сколько?",
     description:
       "Нисколько. Во всем, что мы делаем, можно свободно присоединиться или принять участие.",
     icon: "fa-solid fa-money-bill",
+    id: uuidv4(),
   },
   {
     title: "Зачем?",
     description: "Из-за любви к английскому языку",
     icon: "fa-solid fa-hand-holding-heart",
+    id: uuidv4(),
   },
 ]);
 </script>
@@ -276,23 +300,38 @@ const rightQuestions = reactive([
   font-size: 17px;
 }
 
-.opened-one {
-  height: 305px;
+.dark .accordion_title,
+.dark .accordion_item {
+  background-color: #1e2835;
 }
 
-.opened-two {
-  height: 340px;
+.dark .accordion_content {
+  background-color: #1e2731;
+  color: #fff;
 }
 
-.opened-three {
-  height: 240px;
+.dark .accordion_icon {
+  color: #8774e1;
 }
 
-.opened-four {
-  height: 833px;
+.dark .accordion_title {
+  color: #fff;
 }
-.opened-five {
-  height: 503px;
+
+.dark .question_icon {
+  color: #8774e1;
+}
+
+.dark .question_text-title {
+  color: #fff;
+}
+
+.dark .section_title {
+  color: #fff;
+}
+
+.dark .question_text-description {
+  color: rgb(230, 230, 230);
 }
 
 @media (max-width: 1550px) {
@@ -490,5 +529,29 @@ const rightQuestions = reactive([
   .question_text-description {
     padding-right: 20px;
   }
+
+  .accordion_content {
+    font-size: 11px;
+    line-height: 25px;
+  }
+}
+
+.opened-one {
+  height: 305px;
+}
+
+.opened-two {
+  height: 340px;
+}
+
+.opened-three {
+  height: 240px;
+}
+
+.opened-four {
+  height: 1000px;
+}
+.opened-five {
+  height: 700px;
 }
 </style>

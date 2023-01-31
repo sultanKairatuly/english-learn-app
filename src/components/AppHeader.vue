@@ -17,6 +17,17 @@
       <div class="bar"></div>
       <div class="bar"></div>
     </div>
+    <div class="theme">
+      <i class="fa-solid fa-sun theme-icon"></i>
+      <div class="switcher">
+        <button
+          class="switch-btn"
+          @click="changeTheme"
+          :style="switcherPosition"
+        ></button>
+      </div>
+      <i class="fa-solid fa-moon theme-icon"></i>
+    </div>
   </header>
   <div
     class="menu"
@@ -41,10 +52,12 @@
 
 <script setup>
 import { v4 as uuidv4 } from "uuid";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { useManualPageLoader } from "../composables/manualPageLoader";
 import { useStore } from "vuex";
 
 const store = useStore();
+const { load } = useManualPageLoader();
 const isBurgerMenu = ref(false);
 
 const headerItems = [
@@ -54,43 +67,80 @@ const headerItems = [
     id: uuidv4(),
   },
   {
-    title: "О нас",
-    route: "/about",
-    id: uuidv4(),
-  },
-  {
-    title: "Контакты",
-    route: "/contacts",
-    id: uuidv4(),
-  },
-  {
     title: "Игры",
     route: "/games",
-    subtitles: [
-      {
-        title: "Quiz",
-        route: "/games/quiz",
-        id: uuidv4(),
-      },
-    ],
+    id: uuidv4(),
+  },
+  {
+    title: "Словарный запас",
+    route: "/choose-topic/vocabulary-topic",
+    id: uuidv4(),
+  },
+  {
+    title: "Тесты",
+    route: "/choose-topic/test-topic",
+    id: uuidv4(),
+  },
+  {
+    title: "Грамматика",
+    route: "/choose-topic/grammar-topic",
     id: uuidv4(),
   },
 ];
 
+const switcherPosition = computed(() =>
+  store.state.theme.isDark ? { left: "40px" } : { left: 0 }
+);
+
 async function handleRouting(route) {
   isBurgerMenu.value = false;
-  store.dispatch("callPageLoaderUpdation", true);
-  setTimeout(() => {
-    store.dispatch("callPageLoaderUpdation", false);
-  }, 500);
+  load();
 }
 
 function openMenu() {
   isBurgerMenu.value = !isBurgerMenu.value;
 }
+
+function changeTheme() {
+  const oppositeTheme = !store.state.theme.isDark;
+  store.dispatch("callThemeUpdation", oppositeTheme);
+}
 </script>
 
 <style scoped>
+.theme {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 40px;
+}
+
+.switcher {
+  width: 70px;
+  height: 20px;
+  border-radius: 20px;
+  background-color: #FFFFF0;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.switch-btn {
+  background-color: #5F9EA0;
+  height: 28px;
+  border: 3px solid #FFFFF0;
+  position: absolute;
+  border-radius: 20px;
+  width: 30px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.theme-icon {
+  font-size: 30px;
+  color: #fff;
+  margin: 0 10px;
+}
 .header {
   padding: 40px;
   background-color: #1544c0;
@@ -117,6 +167,7 @@ function openMenu() {
   opacity: 0;
   visibility: hidden;
   background-color: rgba(0, 0, 0, 0.719);
+  margin-top: 100px;
 }
 
 .close {
@@ -199,6 +250,26 @@ function openMenu() {
   font-weight: 500;
 }
 
+.dark .header {
+  background-color: #8774e1;
+}
+
+.dark .bar {
+  background-color: #8774e1;
+}
+
+.dark .menu-content {
+  background-color: #253240;
+}
+
+.dark .menu_item{
+  color: #fff;
+}
+
+.dark .close {
+  color: #fff;
+}
+
 @media (max-width: 1550px) {
   .header {
     padding: 35px;
@@ -253,6 +324,10 @@ function openMenu() {
   .close {
     font-size: 32px;
   }
+
+  .menu {
+    margin-top: 55px;
+  }
 }
 @media (max-width: 375px) {
   .menu_item {
@@ -266,7 +341,7 @@ function openMenu() {
 
 @media (max-width: 320px) {
   .menu_item {
-    font-size: 25px;
+    font-size: 22px;
   }
 
   .burger {

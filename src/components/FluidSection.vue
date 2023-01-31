@@ -5,7 +5,9 @@
         class="fluid_item"
         v-for="fluid in fluids"
         :style="{
-          background: fluid.backColor,
+          background: store.state.theme.isDark
+            ? fluid.backColor.dark
+            : fluid.backColor.light,
         }"
       >
         <i class="fluid_item-icon" :class="fluid.icon"></i>
@@ -21,24 +23,37 @@
 </template>
 
 <script setup>
-const fluids = [
+import { reactive } from "vue";
+import { useStore } from "vuex";
+
+const store = useStore();
+const fluids = reactive([
   {
     title: "What's On?",
     list: ["English Calendar", "English Diary"],
     icon: "fa-solid fa-calendar",
-    backColor: "#000066",
+    backColor: {
+      dark: "#6053a1",
+      light: "#000066",
+    },
   },
   {
     title: "Have Some Fun",
     list: ["Interesting Facts", "Fun With English", "English Jokes"],
     icon: "fa-solid fa-smile",
-    backColor: "#000080",
+    backColor: {
+      dark: "#6857bd",
+      light: "#000080",
+    },
   },
   {
     title: "The Network",
     list: ["English Blog", "English Lessons", "The Sessions", "The Network"],
     icon: "fa-solid fa-compass",
-    backColor: "#0000cc",
+    backColor: {
+      dark: "#8774e1",
+      light: "#0000cc",
+    },
   },
   {
     title: "Books",
@@ -49,9 +64,12 @@ const fluids = [
       "Grammar Books",
     ],
     icon: "fa-solid fa-book",
-    backColor: "#3366ff",
+    backColor: {
+      dark: "#947ffc",
+      light: "#3366ff",
+    },
   },
-];
+]);
 </script>
 
 <style scoped>
