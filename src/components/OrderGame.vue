@@ -42,7 +42,7 @@
   </div>
 
   <div class="container">
-    <h1 class="title">Order game</h1>
+    <h1 class="title">Порядок букв</h1>
     <div class="content">
       <div
         class="content_item"
@@ -103,7 +103,7 @@ const failAudio = ref(null);
 const successAudio = ref(null);
 const isCheckModal = ref(false);
 const rightAnswers = ref(0);
-const level = ref(10);
+const level = ref(1);
 const faded = ref(false);
 const data = reactive([
   {

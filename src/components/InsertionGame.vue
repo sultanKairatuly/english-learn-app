@@ -106,7 +106,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, onMounted } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
 
@@ -549,6 +549,32 @@ const level = ref(1);
 const draggingElement = ref(null);
 const progressBar = ref("0px");
 const correct = ref(0);
+const dragging = ref(false);
+onMounted(() => {
+  document.addEventListener(
+    "dragover",
+    function (e) {
+      const dragY = e.clientY;
+      console.log("Y: " + dragY);
+      console.log("Y: " + e.pageY);
+
+      if (dragY < 50) {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
+
+      if (dragY > windowHeight - 50 && dragY < windowHeight) {
+        window.scrollTo({
+          top: documentHeight,
+          behavior: "smooth",
+        });
+      }
+    },
+    false
+  );
+});
 
 const dragElements = computed(() => {
   return _.shuffle(
@@ -563,10 +589,12 @@ let droppedElements = reactive([]);
 
 function onDragstart(e) {
   draggingElement.value = e.target;
+  dragging.value = true;
   e.target.classList.add("unshowed");
 }
 
 function onDragend(e) {
+  dragging.value = false;
   e.target.classList.remove("unshowed");
 }
 
@@ -913,6 +941,4 @@ function nextLevel() {
 .dark .result_title {
   color: #fff;
 }
-
-
 </style>

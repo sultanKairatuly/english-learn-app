@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <div class="homepage">
-      <h1 class="title">Sultan Learn</h1>
+      <h1 class="title">English Learn</h1>
       <h3 class="subtitle">Помогаем людям учить английский</h3>
       <div class="description">
         Это приложение создано в целях самообучения людей путем веселых игр.
-        Здесь вы можете улучшить свои навыки английского языка и заодно
+        Здесь вы можете улучшить свои навыки английского языка и за одно
         повеселиться. Чтобы узнать о нас больше кликните здесь
       </div>
       <div class="secondary-section">
@@ -53,7 +53,7 @@
               Ошеломляюще
             </div>
           </div>
-          <div class="second-text">ты можешь учить английский бесплатно</div>
+          <div class="second-text">, ты можешь учить английский бесплатно</div>
         </div>
         <div class="extra-info">
           Мы помогаем людям учить английский с 2006 года

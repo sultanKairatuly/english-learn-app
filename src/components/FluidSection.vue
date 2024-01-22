@@ -12,11 +12,7 @@
       >
         <i class="fluid_item-icon" :class="fluid.icon"></i>
         <div class="fluid-item_title">{{ fluid.title }}</div>
-        <div class="fluid_item-subtitle-list">
-          <div class="fluid_item-subtitle" v-for="subtitle in fluid.list">
-            {{ subtitle }}
-          </div>
-        </div>
+       
       </div>
     </div>
   </div>
